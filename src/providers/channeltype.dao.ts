@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { SQLite } from '@ionic-native/sqlite';
 import { AbstractDao } from "./dao.abstract";
 import { Http } from '@angular/http';
-import { ChannelApi } from "./channel.api";
+import { ChanneltypeApi } from "./channeltype.api";
 
 @Injectable()
-export class ChannelDao extends AbstractDao {
+export class ChanneltypeDao extends AbstractDao {
 
     constructor(public http: Http, public sqlite: SQLite) {
         super(sqlite, http);
@@ -14,26 +14,22 @@ export class ChannelDao extends AbstractDao {
 	
 				
 		public tableName() {
-			return "channel";
+			return "channeltype";
 		}
 
 		public tableColumns(): Array<string> {
         var columns = new Array();
 			columns["seq"] = "int";//排序
-			columns["channeltype_id"] = "int";//频道类型
-			columns["channeltype_id_name"] = "varchar";//频道类型
 			columns["name"] = "varchar";//名称
-			columns["is_default"] = "varchar";//默认有
-			columns["is_must"] = "varchar";//必须的
 			columns["status"] = "varchar";//状态
 			columns["status_name"] = "varchar";//状态
 			return columns;
 		}
 				
 			   
-	//获取频道列表，传入对应的搜索条件
+	//获取频道类型列表，传入对应的搜索条件
 	public list(search_condition, showLoadingModel: boolean = true) {
-        let api: ChannelApi = new ChannelApi(this.http);
+        let api: ChanneltypeApi = new ChanneltypeApi(this.http);
         return api.list(search_condition, showLoadingModel).then(data => {
             this.batchUpdate(data);
             return data;
@@ -43,9 +39,9 @@ export class ChannelDao extends AbstractDao {
     }
 	
 	
-	//获取频道列表，传入对应的搜索条件
+	//获取频道类型列表，传入对应的搜索条件
     public sync(search_condition = null, showLoadingModel: boolean = true) {
-        let api: ChannelApi = new ChannelApi(this.http);
+        let api: ChanneltypeApi = new ChanneltypeApi(this.http);
         return this.getLastestUpdatedTime().then((updatedate) => {
             if (updatedate == undefined) {
                 return this.list(search_condition, showLoadingModel);
@@ -75,9 +71,9 @@ export class ChannelDao extends AbstractDao {
 
 
 			   
-	//获取频道详情, 传入对应的id
+	//获取频道类型详情, 传入对应的id
     public get(id, showLoadingModel: boolean = true) {
-        let api: ChannelApi = new ChannelApi(this.http);
+        let api: ChanneltypeApi = new ChanneltypeApi(this.http);
         return api.get(id, showLoadingModel).then(data => {
             if (data != null) {
                 return null;

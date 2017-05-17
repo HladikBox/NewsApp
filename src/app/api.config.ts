@@ -1,4 +1,4 @@
-import { Headers, RequestOptions, Http, Response } from '@angular/http';
+﻿import { Headers, RequestOptions, Http, Response } from '@angular/http';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { LoadingController, Loading } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
@@ -145,12 +145,7 @@ export class ApiConfig {
     }
 
 	public static ErrorHandle(url,post,error: Response) {
-        try {
-            return Observable.throw(error.json().error || 'Server Error');
-
-        } catch (e) {
-
-        }
+        return Observable.throw(error.json().error || 'Server Error').toPromise();
     }  
 }
 

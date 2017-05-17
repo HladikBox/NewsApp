@@ -42,7 +42,7 @@ export class NewsPage extends AppBase {
 
 
         console.log('ionViewDidLoad NewsPage');
-        this.dao.list({}, true).then((data) => {
+        this.dao.sync({}, true).then((data) => {
             alert(JSON.stringify(data));
         });
     }
