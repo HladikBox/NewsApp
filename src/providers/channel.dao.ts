@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+ï»¿import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { AbstractDao } from "./dao.abstract";
-import { Http, Response } from '@angular/http';
+import { Http } from '@angular/http';
 import { ChannelApi } from "./channel.api";
 
 @Injectable()
@@ -17,28 +17,67 @@ export class ChannelDao extends AbstractDao {
 
     public tableColumns(): Array<string> {
         var columns = new Array();
-        columns["seq"] = "int";//ÅÅÐò
-        columns["channeltype_id"] = "int";//ÆµµÀÀàÐÍ
-        columns["channeltype_id_name"] = "varchar";//ÆµµÀÀàÐÍ
-        columns["name"] = "varchar";//Ãû³Æ
-        columns["is_default"] = "varchar";//Ä¬ÈÏÓÐ
-        columns["is_must"] = "varchar";//±ØÐëµÄ
-        columns["status"] = "varchar";//×´Ì¬
-        columns["status_name"] = "varchar";//×´Ì¬
+        columns["seq"] = "int";//æŽ’åº
+        columns["channeltype_id"] = "int";//é¢‘é“ç±»åž‹
+        columns["channeltype_id_name"] = "varchar";//é¢‘é“ç±»åž‹
+        columns["name"] = "varchar";//åç§°
+        columns["is_default"] = "varchar";//é»˜è®¤æœ‰
+        columns["is_must"] = "varchar";//å¿…é¡»çš„
+        columns["status"] = "varchar";//çŠ¶æ€
+        columns["status_name"] = "varchar";//çŠ¶æ€
         return columns;
     }
 
-    public list(search_condition, showLoadingModel: boolean) {
+    public list(search_condition, showLoadingModel: boolean = true) {
+        let api: ChannelApi = new ChannelApi(this.http);
+        return api.list(search_condition, showLoadingModel).then(data => {
+            this.batchUpdate(data);
+            return data;
+        }).catch(e => {
+            return this.simpleQuery(search_condition);
+        });
+    }
+
+    public sync(search_condition = null, showLoadingModel: boolean = true) {
         let api: ChannelApi = new ChannelApi(this.http);
         return this.getLastestUpdatedTime().then((updatedate) => {
             return api.list({ "lastupdatecalltime": updatedate }, showLoadingModel).then(data => {
+                alert(JSON.stringify(data));
                 return this.batchUpdate(data).then(() => {
+                    this.updateLatestUpdatedTime();
+                    if (search_condition == null) {
+                        return null;
+                    }
                     return this.simpleQuery(search_condition);
                 });
+            }).catch(() => {
+                if (search_condition == null) {
+                    return null;
+                }
+                this.simpleQuery(search_condition);
             });
         }).catch(e => {
-            alert("??");
-            return api.list(search_condition, showLoadingModel);
+            if (search_condition == null) {
+                return null;
+            }
+            return this.simpleQuery(search_condition);
+        });
+    }
+
+    public get(id, showLoadingModel: boolean = true) {
+        let api: ChannelApi = new ChannelApi(this.http);
+        return api.get(id, showLoadingModel).then(data => {
+            if (data != null) {
+                return null;
+            } 
+            var lst = Array();
+            lst.push(data);
+            this.batchUpdate(lst);
+
+            return data;
+
+        }).catch(e => {
+            return this.getOne(id);
         });
     }
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { LoadingController, Loading} from 'ionic-angular';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
@@ -51,7 +51,8 @@ public list(search_condition_json, showLoadingModal:boolean=true) {
                 if(showLoadingModal){
 					           ApiConfig.DimissLoadingModal();
                 }
-                return ApiConfig.ErrorHandle("channeltype/list",search_condition_json,err);
+                ApiConfig.ErrorHandle("channeltype/list", search_condition_json, err)
+                return err;
             });
 
         

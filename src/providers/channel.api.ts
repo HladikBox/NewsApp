@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { LoadingController, Loading} from 'ionic-angular';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
@@ -184,7 +184,43 @@ public listInDB(search_condition_json, callback, showLoadingModal:boolean=true) 
         return columns;
     }
 
+    
 
+//获取演讲详情, 传入对应的id
+public get(id, showLoadingModal:boolean=true) {
+        var url = ApiConfig.getApiUrl()+'speech/get';
+        let json={ 'id' : id };
+        var headers = ApiConfig.GetHeader(url, json);
+        let options = new RequestOptions({ headers: headers });
+        let body=ApiConfig.ParamUrlencoded(json);
+
+
+        let loading: Loading=null;
+        if(showLoadingModal){
+          loading = ApiConfig.GetLoadingModal();
+        }
+
+        return this.http.post(url, body, options).toPromise()
+            .then((res) => {
+              if(ApiConfig.DataLoadedHandle('speech/get',json,res)){
+                  if(showLoadingModal){
+                     ApiConfig.DimissLoadingModal();
+                  }
+              
+                 return res.json();
+              }else{
+                return Promise.reject(res);
+              }
+            })
+            .catch(err => {
+                if(showLoadingModal){
+                    ApiConfig.DimissLoadingModal();
+                }
+                return ApiConfig.ErrorHandle('speech/get',json,err);
+            });
+
+        
+    }
 
 
 

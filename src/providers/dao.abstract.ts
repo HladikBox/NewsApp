@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Http, Response } from '@angular/http';
 import { ApiConfig } from "../app/api.config";
@@ -68,6 +68,13 @@ export abstract class AbstractDao {
             }).catch(e => console.log(e));
     }
 
+    public updateLatestUpdatedTime() {
+        this.getDbInstance()
+            .then((db: SQLiteObject) => {
+                db.executeSql("update applink_api_lastcall set calltime=datetime('now', 'localtime') where objname=?", [this.tableName()]);
+            }).catch(e => console.log(e));
+    }
+
     public batchUpdate(data) {
         var idlist = new Array();
         idlist.push(0);
@@ -93,17 +100,16 @@ export abstract class AbstractDao {
                                 }
                                 var preUpdateObj = null;
                                 if (isexists) {
-                                    preUpdateObj = dao.preUpdateSql(data);
+                                    preUpdateObj = dao.preUpdateSql(data[i]);
                                 } else {
-                                    preUpdateObj = dao.preInsertSql(data);
+                                    preUpdateObj = dao.preInsertSql(data[i]);
                                 }
-                                //alert(preUpdateObj.sql);
                                 tx.executeSql(preUpdateObj.sql, preUpdateObj.param);
                             }
-                            tx.executeSql("update applink_api_lastcall set calltime=datetime('now', 'localtime') where objname=?", [dao.tableName()]);
                         }).then(ret => {
-
-                        }).catch(ex => console.log(ex));
+                        }).catch(ex => {
+                            console.log(ex);
+                        });
                     });
 
             }).catch(e => console.log(e));
@@ -144,6 +150,8 @@ export abstract class AbstractDao {
             }
         }
         sql += " ,?);"
+        param.push(data.id);
+
         return { sql: sql, param: param };
     }
 
@@ -174,6 +182,19 @@ export abstract class AbstractDao {
                     ret.push(data.rows.item(i));
                 }
                 return ret;
+            });
+        });
+    }
+
+    public getOne(id) {
+        var sql = "select * from " + this.tableName() + " where id=? ";
+        return this.getDbInstance().then((db: SQLiteObject) => {
+            return db.executeSql(sql, [id]).then(data => {
+                if (data.rows.length > 0) {
+                    return data.rows.item(0);
+                } else {
+                    return null;
+                }
             });
         });
     }
