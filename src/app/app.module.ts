@@ -2,6 +2,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+import { HttpModule } from '@angular/http';
+import { SQLite } from '@ionic-native/sqlite';
 
 import { TabsPage } from '../pages/tabs/tabs';
 import { MePage } from '../pages/me/me';
@@ -11,6 +13,9 @@ import { VideoPage } from '../pages/video/video';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+
+
+import { ChannelDao } from '../providers/channel.dao';
 
 @NgModule({
     declarations: [
@@ -23,6 +28,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     ],
     imports: [
         BrowserModule,
+        HttpModule,
         IonicModule.forRoot(MyApp)
     ],
     bootstrap: [IonicApp],
@@ -37,6 +43,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     providers: [
         StatusBar,
         SplashScreen,
+        SQLite,
+        ChannelDao,
         { provide: ErrorHandler, useClass: IonicErrorHandler }
     ]
 })
